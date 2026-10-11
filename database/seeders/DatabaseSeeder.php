@@ -14,6 +14,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(ExpertSystemSeeder::class);
+        $this->call([
+            ExpertSystemSeeder::class,
+            RepairCostSeeder::class,
+            MarketValueSeeder::class,
+        ]);
     }
 }

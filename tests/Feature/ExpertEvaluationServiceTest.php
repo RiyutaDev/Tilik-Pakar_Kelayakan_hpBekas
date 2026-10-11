@@ -9,6 +9,7 @@ use App\Models\Question;
 use App\Models\Rule;
 use App\Services\ExpertSystem\ExpertEvaluationService;
 use Database\Seeders\ExpertSystemSeeder;
+use Database\Seeders\RepairCostSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -30,17 +31,21 @@ class ExpertEvaluationServiceTest extends TestCase
             ->assertOk()
             ->assertSee('Keputusan baik')
             ->assertSee('Smartphone Android')
-            ->assertSee('12 cek')
+            ->assertSee('Pilih perangkat')
             ->assertSee('iPhone');
     }
 
     #[Test]
-    public function dashboard_uses_device_specific_placeholder_for_iphone_and_android(): void
+    public function dashboard_uses_one_shared_device_search_and_profile_form_for_all_platforms(): void
     {
         $this->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Contoh: Galaxy A54')
-            ->assertSee('Contoh: iPhone 12 Pro');
+            ->assertSee('name="device_id"', false)
+            ->assertSee('name="device_type_id"', false)
+            ->assertSee('Cari nama atau merek')
+            ->assertSee('Smartphone Android')
+            ->assertSee('iPhone')
+            ->assertDontSee('name="device_label"', false);
     }
 
     #[Test]
@@ -75,8 +80,8 @@ class ExpertEvaluationServiceTest extends TestCase
             ->assertOk()
             ->assertSee('Galaxy A54')
             ->assertSee('Layak dipertimbangkan')
-            ->assertSee('Kesimpulan pembelian')
-            ->assertSee('Produk layak dibeli')
+            ->assertSee('Evaluasi Pembelian')
+            ->assertSee('Evaluasi ekonomi belum dapat dilakukan karena data harga belum lengkap.')
             ->assertSee('DATA COMPLETENESS')
             ->assertSee('all_required_checks_normal');
     }
@@ -144,6 +149,7 @@ class ExpertEvaluationServiceTest extends TestCase
     #[Test]
     public function result_page_lists_repair_estimates_for_detected_issues(): void
     {
+        $this->seed(RepairCostSeeder::class);
         $session = $this->makeSession();
         $batteryQuestion = Question::where('code', 'battery_health')->firstOrFail();
 
@@ -162,7 +168,8 @@ class ExpertEvaluationServiceTest extends TestCase
         $this->get(route('assessments.result', $session))
             ->assertOk()
             ->assertSee('Estimasi perbaikan')
-            ->assertSee('Baterai');
+            ->assertSee('Baterai')
+            ->assertSee('Rp350.000 – Rp700.000');
     }
 
     #[Test]

@@ -19,6 +19,7 @@
             </a>
             <nav class="main-nav" aria-label="Navigasi utama">
                 <a class="{{ request()->routeIs('dashboard') ? 'is-active' : '' }}" href="{{ route('dashboard') }}">Ruang kerja</a>
+                <a class="{{ request()->routeIs('devices.*') ? 'is-active' : '' }}" href="{{ route('devices.index') }}">Katalog</a>
                 <a class="{{ request()->routeIs('assessments.history') ? 'is-active' : '' }}" href="{{ route('assessments.history') }}">Riwayat</a>
             </nav>
             <div class="topbar-meta"><span class="status-dot"></span> MESIN ATURAN AKTIF</div>
